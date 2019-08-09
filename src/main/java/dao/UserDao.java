@@ -11,10 +11,11 @@ public interface UserDao {
 
     //read
     List<User> getAll();
-    // List<User> getAllUsersForADepartment(int id);
+    List<User> getAllUsersForADepartment(int id);
+    User findById(int id);
 
     //update
-    //omit for now
+    void update(String userName, String userAddress, int userMobIleNo,String userEmail, String position, int departmentId);
 
     //delete
     void deleteById(int id);
