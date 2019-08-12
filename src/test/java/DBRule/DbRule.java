@@ -23,7 +23,6 @@ public class DbRule extends ExternalResource {
     @Override
     public void after(){
         userDao.clearAll();
-//        departmentDao.clearAll();
         conn.close();
     }
 
