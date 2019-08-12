@@ -56,6 +56,11 @@ public class Sql2oUserDao implements UserDao {
     }
 
     @Override
+    public void update(int id, String name) {
+
+    }
+
+    @Override
     public void deleteById(int id) {
         String sql = "DELETE FROM users WHERE id=:id";
         try (Connection con = sql2o.open()) {
