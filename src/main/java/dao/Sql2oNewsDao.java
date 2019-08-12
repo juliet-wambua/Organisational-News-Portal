@@ -1,6 +1,5 @@
 package dao;
 
-import DB.DB;
 import models.News;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
