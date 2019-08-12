@@ -13,7 +13,7 @@ public class DbRule extends ExternalResource {
 
     @Override
     public void before(){
-        String connectionString = "jdbc:postgresql://localhost:5432/organizational_news_portal_test";
+        String connectionString = "jdbc:postgresql://localhost:5432/organizational_news_test";
         Sql2o sql2o = new Sql2o(connectionString,"moringaschool","1543" );
         userDao = new Sql2oUserDao(sql2o);
         Sql2oDepartmentDao departmentDao = new Sql2oDepartmentDao(sql2o);

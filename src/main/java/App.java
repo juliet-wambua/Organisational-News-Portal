@@ -67,7 +67,7 @@ public class App {
             Map<String, Object> model = new HashMap<>();
             String userName = req.queryParams("userName");
             String address = req.queryParams("address");
-            String phone = req.queryParams("phone") ;
+            int phone = Integer.parseInt(req.queryParams("phone"));
             String email = req.queryParams("email");
             int departmentId = Integer.parseInt(req.queryParams("departmentId"));
             String position = req.queryParams("position");
