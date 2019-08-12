@@ -1,6 +1,7 @@
 package dao;
+
 import DB.DB;
-import Models.News;
+import models.News;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
@@ -59,12 +60,12 @@ public class Sql2oNewsDao implements NewsDao {
     public void update(int id, String news, int departmentId) {
         String sql = "UPDATE news SET (news, departmentId) = (:news, :departmentId) WHERE id=:id";
         try (Connection conn = sql2o.open()){
-            conn.createQuery(sql,true)
-                    .addParameter("id", id)
-                    .addParameter("news", news)
-                    .addParameter("departmentId", departmentId)
-                    .throwOnMappingFailure(false)
-                    .executeUpdate();
+        conn.createQuery(sql,true)
+                .addParameter("id", id)
+                .addParameter("news", news)
+                .addParameter("departmentId", departmentId)
+                .throwOnMappingFailure(false)
+                .executeUpdate();
         }
 
     }

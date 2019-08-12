@@ -10,15 +10,16 @@ noOfEmployees int
 CREATE TABLE IF NOT EXISTS news(
 id int PRIMARY KEY auto_increment,
 generalNews VARCHAR,
-departmentId VARCHAR,
+departmentId int,
 );
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS user (
 id int PRIMARY KEY auto_increment,
 userName VARCHAR,
-userAddress VARCHAR,
-userMobileNo int,
-userEmail VARCHAR,
+address VARCHAR,
+phone int,
+email VARCHAR,
 position VARCHAR,
-departmentId VARCHAR,
+departmentId int,
+roles VARCHAR
 );

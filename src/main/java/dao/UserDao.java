@@ -1,6 +1,6 @@
 package dao;
 
-import org.h2.engine.User;
+import models.User;
 
 import java.util.List;
 
@@ -11,13 +11,15 @@ public interface UserDao {
 
     //read
     List<User> getAll();
-    List<User> getAllUsersForADepartment(int id);
+    List<User> getAllUsersByDepartment(int departmentId);
     User findById(int id);
 
+
     //update
-    void update(String userName, String userAddress, int userMobIleNo,String userEmail, String position, int departmentId);
+//    void update(int id, String name);
 
     //delete
     void deleteById(int id);
     void clearAll();
 }
+

@@ -1,12 +1,13 @@
 package DB;
+
 import org.sql2o.Sql2o;
 
 public class DB {
 
     // DEVELOPMENT DATABASE
-    private static String testConnectionString = "jdbc:postgresql://localhost:5432/organizational_news_portal_test";
-    private static String testUsers = "moringaschool";
-    private static String testPassword = "1543";
+    private static String testConnectionString = "jdbc:postgresql://localhost:5432/org_api_test";
+    private static String testUser = "moringa";
+    private static String testPassword = "c3l12i9f6f6";
 //    public static Sql2o sql2o = new Sql2o( testConnectionString, testUser, testPassword);// Comment this out if you are testing your app locally
 
     // PRODUCTION DATABASE

@@ -1,20 +1,20 @@
 package dao;
+
 import DB.DB;
-import Models.Users;
-import org.h2.engine.User;
+import models.User;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
 import java.util.List;
 
-public class Sql2oUsersDao implements UsersDao {
+public class Sql2oUserDao implements UserDao {
 
     private final Sql2o sql2o;
-    public Sql2oUsersDao(Sql2o sql2o){this.sql2o = sql2o;}
+    public Sql2oUserDao(Sql2o sql2o){this.sql2o = sql2o;}
 
     @Override
-    public void add(Users user) {
+    public void add(User user) {
         String sql = "INSERT INTO users (username, address, phone, email, departmentid, position, roles) VALUES (:userName, :address, :phone, :email, :departmentId, :position, :roles);";
         try (Connection conn = sql2o.open()) {
             int id = (int) conn.createQuery(sql, true)
@@ -28,31 +28,31 @@ public class Sql2oUsersDao implements UsersDao {
     }
 
     @Override
-    public List<Users> getAll() {
+    public List<User> getAll() {
         try (Connection conn = sql2o.open()) {
             return conn.createQuery("SELECT * FROM users")
-                    .executeAndFetch(Users.class);
+                    .executeAndFetch(User.class);
         }
     }
 
     @Override
-    public List<Users> getAllUsersByDepartment(int departmentId) {
+    public List<User> getAllUsersByDepartment(int departmentId) {
         String sql = "SELECT * FROM users WHERE departmentId=:departmentId";
         try (Connection conn = sql2o.open()){
             return conn.createQuery(sql)
                     .addParameter("departmentId", departmentId)
                     .throwOnMappingFailure(false)
-                    .executeAndFetch(Users.class);
+                    .executeAndFetch(User.class);
         }
     }
 
     @Override
-    public Users findById(int id) {
+    public User findById(int id) {
         String sql = "SELECT * FROM users WHERE id=:id;";
         try(Connection conn = sql2o.open()) {
-            return conn.createQuery(sql)
+           return conn.createQuery(sql)
                     .addParameter("id", id)
-                    .executeAndFetchFirst(Users.class);
+                    .executeAndFetchFirst(User.class);
         }
     }
 
