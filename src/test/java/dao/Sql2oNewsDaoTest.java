@@ -1,92 +1,55 @@
 package dao;
 
-import DB.DB;
 import models.News;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 public class Sql2oNewsDaoTest {
+    private static Connection conn;
+    private static Sql2oNewsDao newsDao;
+    private static Sql2oDepartmentsDao departmentsDao;
 
-    private Connection conn;
-    private Sql2oNewsDao newsDao ;
+    public News setupNews(){
+        return new News(1,"snitch","guess who's broke?");
+    }
 
     @Before
     public void setUp() throws Exception {
-        String connectionString = "jdbc:postgresql://localhost:5432/organizational_news_test";
-        Sql2o sql2o = new Sql2o(connectionString,"moringaschool","1543" );
+        String connectionString = "jdbc:postgresql://localhost:5432/newsportal_test";
+        Sql2o sql2o = new Sql2o(connectionString, "moringaschool", "1543");
         newsDao = new Sql2oNewsDao(sql2o);
         conn = sql2o.open();
     }
 
     @After
     public void tearDown() throws Exception {
-        newsDao.clearAll();
         conn.close();
     }
-
-
+    //Add news
     @Test
-    public void add() {
-        News news = setUpNews();
-        assertEquals(1,newsDao.getAll().size());
+    public void addNews() throws Exception{
+        News testNews = setupNews();
+        newsDao.add(testNews);
+        int newId = testNews.getNews_id();
+        assertEquals(newId,testNews.getNews_id());
     }
+//    @Test
+//    public void deleteById() throws Exception {
+//        News testNews = setupNews();
+//        News otherNews = setupNews();
+//        assertEquals(2, newsDao.getAllNews().size());
+//       // NewsDao.deleteById(testNews.getNews_id());
+//        assertEquals(1, newsDao.getAllNews().size());
+//    }
 
-    @Test
-    public void getAll() {
-        News news = setUpNews();
-        assertEquals(true, newsDao.getAll().contains(news));
 
-    }
 
-    @Test
-    public void getAllNewsByDepartment() {
-        News news = setUpNews();
-        List<News> allNewsByDept = newsDao.getAllNewsByDepartment(news.getDepartmentId());
-        assertEquals(news.getDepartmentId(),allNewsByDept.get(0).getDepartmentId());
 
-    }
 
-    @Test
-    public void findById() {
-        News news = setUpNews();
-        assertEquals(news, newsDao.findById(news.getId()));
-    }
 
-    @Test
-    public void update() {
-        News news = setUpNews();
-        String newsString = news.getNews();
-        newsDao.update(newsDao.getAll().get(0).getId(),"New news",3);
-        assertEquals("New news",newsDao.getAll().get(0).getNews());
-    }
-
-    @Test
-    public void deleteById() {
-        News news = setUpNews();
-        newsDao.deleteById(news.getId());
-        assertEquals(0, newsDao.getAll().size());
-
-    }
-
-    @Test
-    public void clearAll() {
-        News news = setUpNews();
-        newsDao.clearAll();
-        assertEquals(0, newsDao.getAll().size());
-    }
-
-    //helper
-    public News setUpNews(){
-        News news = new News("Collection of Dividents",2);
-        newsDao.add(news);
-        return news;
-    }
 }

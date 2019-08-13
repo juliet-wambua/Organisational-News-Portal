@@ -1,161 +1,161 @@
-import  com.google.gson.*;
-import DB.DB;
-import dao.*;
+import com.google.gson.Gson;
+import dao.Sql2oNewsDao;
+import dao.Sql2oEmployeesDao;
+import dao.Sql2oDepartmentsDao;
+import models.Departments;
 import exceptions.ApiException;
-import models.*;
-import spark.ModelAndView;
-import spark.template.handlebars.*;
+import models.Employees;
+import models.News;
+import org.sql2o.Connection;
+import org.sql2o.Sql2o;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.*;
 
 public class App {
 
-
     public static void main(String[] args) {
-
-        staticFileLocation("/public");
-
-        ProcessBuilder process = new ProcessBuilder();
-        Integer port;
-
-        if (process.environment().get("PORT") != null) {
-            port = Integer.parseInt(process.environment().get("PORT"));
-        }else {
-            port = 4567;
-        }
-        port(port);
-        Sql2oUserDao userDao = new Sql2oUserDao(DB.sql2o);
-        Sql2oNewsDao newsDao = new Sql2oNewsDao(DB.sql2o);
-        Sql2oDepartmentDao departmentDao = new Sql2oDepartmentDao(DB.sql2o);
-        final String notAvailableMsg = "Sorry, nothing to display yet!",notAvailable;
-        final String cannotBeEmptyMsg = "Please try again with your correct details!",cannotBeEmpty;
-
+        Sql2oDepartmentsDao departmentsDao;
+        Sql2oNewsDao newsDao;
+        Sql2oEmployeesDao employeesDao;
+        Connection conn;
         Gson gson = new Gson();
 
-        //TEMPLATES
-        get("/",(req, res)->{
-            Map<String, Object> model = new HashMap<>();
-            List<News> news = newsDao.getAll();
-            int deptId = 1;
+        String connectionString = "jdbc:postgresql://localhost:5432/newsportal";
+        Sql2o sql2o = new Sql2o(connectionString, "moringaschool", "1543");
 
-            Department department = departmentDao.findById(deptId);
-            model.put("news", news);
-            model.put("deptId", deptId);
-            model.put("department", department);
-            return new ModelAndView(model, "index.hbs");
-        }, new HandlebarsTemplateEngine());
+        departmentsDao = new Sql2oDepartmentsDao(sql2o);
+        employeesDao = new Sql2oEmployeesDao(sql2o);
+        newsDao = new Sql2oNewsDao(sql2o);
+        conn = sql2o.open();
 
-        get("/main",(req, res)->{
-            Map<String, Object> model = new HashMap<>();
-            return new ModelAndView(model, "main.hbs");
-        }, new HandlebarsTemplateEngine());
-
-        post("/new/news", (req, res)->{
-            Map<String, Object> model = new HashMap<>();
-            String news = req.queryParams("news");
-            int departmentId = Integer.parseInt(req.queryParams("departmentId"));
-            News newNews = new News(news,departmentId);
-            newsDao.add(newNews);
-            return new ModelAndView(model, "main.hbs");
-        }, new HandlebarsTemplateEngine());
-
-        post("/new/user", (req, res) -> {
-            Map<String, Object> model = new HashMap<>();
-            String userName = req.queryParams("userName");
-            String address = req.queryParams("address");
-            int phone = Integer.parseInt(req.queryParams("phone"));
-            String email = req.queryParams("email");
-            int departmentId = Integer.parseInt(req.queryParams("departmentId"));
-            String position = req.queryParams("position");
-            String roles = req.queryParams("roles");
-            User newUser = new User(userName,address,phone,email,departmentId,position,roles);
-            userDao.add(newUser);
-            return new ModelAndView(model, "main.hbs");
-        }, new HandlebarsTemplateEngine());
-
-        post("/new/department",(req, res) -> {
-            Map<String, Object> model = new HashMap<>();
-            String name = req.queryParams("name") ;
-            String description = req.queryParams("description") ;
-            int employees = Integer.parseInt(req.queryParams("employees"));
-            Department newDepartment = new Department(name, description, employees);
-            departmentDao.add(newDepartment);
-            return new ModelAndView(model, "main.hbs");
-        }, new HandlebarsTemplateEngine());
-
-
-        // JSON READ
-        get("/users", "application/json",(req, res) -> {
-            if(userDao.getAll().size() < 1){
-                throw new ApiException(404, String.format(notAvailableMsg,"Users"));
-            }
-            res.type("application/json");
-            return gson.toJson(userDao.getAll());
-        });
-
-        get("/news", "application/json",(req, res) ->{
-           if(newsDao.getAll().size() < 1){
-               throw new ApiException(404, String.format(notAvailableMsg,"news"));
-           }
-           res.type("application/json");
-           return gson.toJson(newsDao.getAll());
-        });
-
-        get("/departments", "application/json",(req, res) ->{
-           if(departmentDao.getAll().size() < 0){
-                throw new ApiException(404, String.format(notAvailableMsg,"departments"));
-           }
-           res.type("application/json");
-           return gson.toJson(departmentDao.getAll());
-        });
-
-        // JSON CREATE
-        post("/users/new", "application/json", (req, res)->{
-            User user = gson.fromJson(req.body(), User.class);
-            if(user == null || user.getUserName() == null){
-                throw new ApiException(404, String.format(cannotBeEmptyMsg,"User"));
-            }
-            userDao.add(user);
-            res.type("application/json");
+        //create
+        post("/departments/new", "application/json", (req, res) -> {
+            Departments departments = gson.fromJson(req.body(), Departments.class);
+            departmentsDao.add(departments);
             res.status(201);
-            return gson.toJson(user);
+            res.type("application/json");
+            return gson.toJson(departmentsDao.getAllDepartments());
         });
 
-        post("/news/new", "application/json", (req, res)->{
-            News news = gson.fromJson(req.body(), News.class);
-            if(news == null || news.getNews() == null){
-                throw new ApiException(404, String.format(cannotBeEmptyMsg,"User"));
+        //read all
+
+        get("/departments", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            return gson.toJson(departmentsDao.getAllDepartments());//send it back to be displayed
+        });
+        get("/departments/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int dpt_id = Integer.parseInt(req.params("id"));
+
+            Departments departmentsToFind = departmentsDao.findById(dpt_id);
+            if (departmentsToFind == null){
+                throw new ApiException(404, String.format("No department with the id: \"%s\" exists", req.params("id")));
             }
+            res.type("application/json");
+            return gson.toJson(departmentsDao.findById(dpt_id));
+        });
+
+        //news : dpt
+
+        //Add news 2 department
+        post("/departments/:id/news/new","application/json",(request, response) -> {
+            int id = Integer.parseInt(request.params("id"));
+            News news = gson.fromJson(request.body(),News.class);
+            news.setNews_id(id);
             newsDao.add(news);
-            res.type("application/json");
-            res.status(201);
+            response.type("application/json");
+            response.status(201);
             return gson.toJson(news);
         });
+        //access news for a certain department
+        get("/departments/:id/dptNews", "application/json", (request, response) -> {
+            int id = Integer.parseInt(request.params("id"));
+            return gson.toJson(newsDao.getAllNews());
+        });
+        post("/departments/:dpt_id/employees/new", "application/json", (req, res) -> {
+            int dpt_id = Integer.parseInt(req.params("dpt_id"));
+            Employees employees = gson.fromJson(req.body(), Employees.class);
+            employees.setId(dpt_id);
+            employeesDao.add(employees);
+            res.status(201);
+            res.type("application/json");
+            return gson.toJson(employees);
+        });
 
-        post("/department/new", "application/json", (req, res) -> {
-           Department department = gson.fromJson(req.body(), Department.class);
-           if (department == null){
-               throw new ApiException(404, String.format(cannotBeEmptyMsg,"Department"));
-           }
-           departmentDao.add(department);
-           res.type("application/json");
-           res.status(201);
-           return gson.toJson(department);
+        //Add an employee
+        post("/employees/new", "application/json", (request, response) -> {
+            Employees employees = gson.fromJson(request.body(), Employees.class);
+            employeesDao.add(employees);
+            response.type("application/json");
+            response.status(201);
+            return gson.toJson(employees);
+        });
+        //access all employees
+        get("/employees", "application/json", (request, response) -> gson.toJson(employeesDao.getAllEmployees()));
+        //Assign a department to an employee
+        post("/employees/emp_id/departments/:dpt_id","application/json",(request, response) -> {
+            int empid = Integer.parseInt(request.params("emp_id"));
+            int dptid = Integer.parseInt(request.params("dpt_id"));
+            Employees empFound = employeesDao.findById(empid);
+            Departments dptFound = departmentsDao.findById(dptid);
+
+            if (dptFound != null && empFound!= null){
+                departmentsDao.addDptToEmployees(dptFound,empFound);
+                response.type("application/json");
+                response.status(201);
+                return gson.toJson(String.format("Employees '%s' and Department '%s' successfully created",empFound.getEmp_name(), dptFound.getDpt_name()));
+            }
+            else {
+                throw new ApiException(404, String.format("Employee or Department not found"));
+            }
         });
 
 
-        exception(ApiException.class, (exc, req, res) ->{
+
+        get("/employees/:emp_id/departments","application/json",(request, response) -> {
+            int empid = Integer.parseInt(request.params("emp_id"));
+            Employees employeesTofind = employeesDao.findById(empid);
+
+            if (employeesTofind == null){
+                throw new Exception("Employee with that id does not exist");
+            }else if(employeesDao.getAllDptBelongingToEmployees(empid).size() == 0){
+                return "{\"message\":\"Sorry! Employee not associated with any of the departments\"}";
+            }else {
+                return gson.toJson(employeesDao.getAllDptBelongingToEmployees(empid));
+            }
+        });
+
+
+        //Add news
+        post("/news/new","application/json",(request, response) -> {
+            News news = gson.fromJson(request.body(),News.class);
+            newsDao.add(news);
+            response.type("application/json");
+            response.status(201);
+            return gson.toJson(news);
+        });
+        //Read all news
+        get("/news","application/json",(request, response) -> {
+            int dpt_id = Integer.parseInt(request.params("dpt_id"));
+            response.type("application/json");
+            return gson.toJson(newsDao.getAllNews());
+        });
+
+        exception(ApiException.class, (exc, req, res) -> {
             ApiException err = (ApiException) exc;
             Map<String, Object> jsonMap = new HashMap<>();
             jsonMap.put("status", err.getStatusCode());
             jsonMap.put("errorMessage", err.getMessage());
+            res.type("application/json"); //after does not run in case of an exception.
+            res.status(err.getStatusCode()); //set the status
+            res.body(gson.toJson(jsonMap));  //set the output.
+        });
+        //FILTERS
+        after((req, res) ->{
             res.type("application/json");
-            res.status(err.getStatusCode());
-            res.body(gson.toJson(jsonMap));
         });
 
     }

@@ -1,58 +1,47 @@
 package models;
 
-import java.util.Objects;
-
 public class News {
 
-    private String news;
-    private int departmentId = -1;
     private int id;
+    private String news_content;
+    private int dpt_id;
+    private String news_name;
 
-    public News(String news){
-
-        this.news = news;
-    }
-    public News(String news, int departmentId){
-        this.news = news;
-        this.departmentId = departmentId;
-    }
-
-    public String getNews() {
-        return news;
+    public News(int dpt_id,String news_name,String news_content) {
+        this.news_content = news_content;
+        this.dpt_id = dpt_id;
+        this.news_name = news_name;
     }
 
-    public void setNews(String news) {
-        this.news = news;
-    }
-
-    public int getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(int departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public int getId() {
+    public int getNews_id() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setNews_id(int news_id) {
+        this.id = news_id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof News)) return false;
-        News news1 = (News) o;
-        return getDepartmentId() == news1.getDepartmentId() &&
-                getId() == news1.getId() &&
-                getNews().equals(news1.getNews());
+    public String getNews_content() {
+        return news_content;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getNews(), getDepartmentId(), getId());
+    public void setNews_content(String news_content) {
+        this.news_content = news_content;
+    }
+
+    public int getDpt_id() {
+        return dpt_id;
+    }
+
+    public void setDpt_id(int dpt_id) {
+        this.dpt_id = dpt_id;
+    }
+
+    public String getNews_name() {
+        return news_name;
+    }
+
+    public void setNews_name(String news_name) {
+        this.news_name = news_name;
     }
 }
