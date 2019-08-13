@@ -1,10 +1,8 @@
 package dao;
 
-import DB.DB;
 import models.News;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -36,7 +34,7 @@ public class Sql2oNewsDaoTest {
     @Test
     public void getAll() {
         News news = setUpNews();
-        assertEquals(true, newsDao.getAll().contains(news));
+        assertTrue(newsDao.getAll().contains(news));
 
     }
 
