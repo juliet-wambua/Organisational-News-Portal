@@ -113,7 +113,17 @@ public class App {
             }
         });
 
+        get("/employees/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int dpt_id = Integer.parseInt(req.params("id"));
 
+            Employees employeesToFind = employeesDao.findById(dpt_id);
+            if (employeesToFind == null){
+                throw new ApiException(404, String.format("No department with the id: \"%s\" exists", req.params("id")));
+            }
+            res.type("application/json");
+            return gson.toJson(employeesDao.findById(dpt_id));
+        });
 
         get("/employees/:emp_id/departments","application/json",(request, response) -> {
             int empid = Integer.parseInt(request.params("emp_id"));
@@ -137,13 +147,22 @@ public class App {
             response.status(201);
             return gson.toJson(news);
         });
-        //Read all news
-        get("/news","application/json",(request, response) -> {
-            int dpt_id = Integer.parseInt(request.params("dpt_id"));
-            response.type("application/json");
-            return gson.toJson(newsDao.getAllNews());
-        });
 
+        get("/news", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            return gson.toJson(newsDao.getAllNews());//send it back to be displayed
+        });
+        get("/news/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int dpt_id = Integer.parseInt(req.params("id"));
+
+            News newsToFind = newsDao.findByiId(dpt_id);
+            if (newsToFind == null){
+                throw new ApiException(404, String.format("No department with the id: \"%s\" exists", req.params("id")));
+            }
+            res.type("application/json");
+            return gson.toJson(newsDao.findByiId(dpt_id));
+        });
         exception(ApiException.class, (exc, req, res) -> {
             ApiException err = (ApiException) exc;
             Map<String, Object> jsonMap = new HashMap<>();

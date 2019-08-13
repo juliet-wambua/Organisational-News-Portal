@@ -13,7 +13,6 @@ public interface DepartmentsDao {
     //list and read all departments
     List<Departments>getAllDepartments();
 
-    //M:M r-ship
     void addDptToEmployees(Departments departments, Employees employees);
     List<Employees> getAllEmployeesBelongingToDepartment(int emp_id);
 
