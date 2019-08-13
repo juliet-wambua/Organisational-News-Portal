@@ -34,10 +34,6 @@ public class Sql2oDepartmentDao implements DepartmentDao{
         }
     }
 
-    @Override
-    public List<Department> getAllUsersByDepartment(int departmentId) {
-        return null;
-    }
 
     @Override
     public Department findById(int id) {
@@ -49,10 +45,6 @@ public class Sql2oDepartmentDao implements DepartmentDao{
         }
     }
 
-    @Override
-    public void update(int id, String name) {
-
-    }
 
     @Override
     public void deleteById(int id) {

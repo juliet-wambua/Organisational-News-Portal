@@ -1,5 +1,4 @@
 import  com.google.gson.*;
-
 import DB.DB;
 import dao.*;
 import exceptions.ApiException;
@@ -29,7 +28,6 @@ public class App {
             port = 4567;
         }
         port(port);
-
         Sql2oUserDao userDao = new Sql2oUserDao(DB.sql2o);
         Sql2oNewsDao newsDao = new Sql2oNewsDao(DB.sql2o);
         Sql2oDepartmentDao departmentDao = new Sql2oDepartmentDao(DB.sql2o);

@@ -34,12 +34,16 @@ public class Sql2oDepartmentDaoTest {
         assertEquals(department.getId(), department.getId());
     }
 
+    @Test
+    public void getAll() {
+        Department department = setUpDepartment();
+        assertTrue(departmentDao.getAll().contains(department));
+    }
 
     @Test
     public void findById() {
         Department department = setUpDepartment();
-        departmentDao.findById(department.getId());
-        assertEquals(0, departmentDao.findById(department.getId()));
+        assertEquals(department, departmentDao.findById(department.getId()));
     }
 
     @Test
@@ -56,8 +60,9 @@ public class Sql2oDepartmentDaoTest {
         assertEquals(0, departmentDao.getAll().size());
     }
 
+    //helper
     public Department setUpDepartment(){
-        Department department = new Department(" "," ",1);
+        Department department = new Department("snitch","snitch",20);
         departmentDao.add(department);
         return department;
     }

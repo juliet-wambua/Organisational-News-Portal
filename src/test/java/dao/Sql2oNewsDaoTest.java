@@ -1,8 +1,10 @@
 package dao;
 
+import DB.DB;
 import models.News;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -32,9 +34,15 @@ public class Sql2oNewsDaoTest {
 
 
     @Test
+    public void add() {
+        News news = setUpNews();
+        assertEquals(1,newsDao.getAll().size());
+    }
+
+    @Test
     public void getAll() {
         News news = setUpNews();
-        assertTrue(newsDao.getAll().contains(news));
+        assertEquals(true, newsDao.getAll().contains(news));
 
     }
 
@@ -77,7 +85,7 @@ public class Sql2oNewsDaoTest {
 
     //helper
     public News setUpNews(){
-        News news = new News("Snitch",2);
+        News news = new News("Collection of Dividents",2);
         newsDao.add(news);
         return news;
     }
