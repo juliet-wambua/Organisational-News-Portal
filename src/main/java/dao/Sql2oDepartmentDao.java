@@ -35,6 +35,11 @@ public class Sql2oDepartmentDao implements DepartmentDao{
     }
 
     @Override
+    public List<Department> getAllUsersByDepartment(int departmentId) {
+        return null;
+    }
+
+    @Override
     public Department findById(int id) {
         String sql = "SELECT * FROM department WHERE id=:id;";
         try(Connection conn = sql2o.open()) {
@@ -42,6 +47,11 @@ public class Sql2oDepartmentDao implements DepartmentDao{
                     .addParameter("id", id)
                     .executeAndFetchFirst(Department.class);
         }
+    }
+
+    @Override
+    public void update(int id, String name) {
+
     }
 
     @Override

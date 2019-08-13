@@ -5,7 +5,7 @@ import java.util.Objects;
 public class News {
 
     private String news;
-    private int departmentId = -1;
+    private int departmentId = 1;
     private int id;
 
     public News(String news){

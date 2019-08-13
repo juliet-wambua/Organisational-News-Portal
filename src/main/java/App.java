@@ -33,8 +33,8 @@ public class App {
         Sql2oUserDao userDao = new Sql2oUserDao(DB.sql2o);
         Sql2oNewsDao newsDao = new Sql2oNewsDao(DB.sql2o);
         Sql2oDepartmentDao departmentDao = new Sql2oDepartmentDao(DB.sql2o);
-        final String notAvailableMsg = "Sorry nothing to display yet",notAvailable;
-        final String cannotBeEmptyMsg = "Please try again!",cannotBeEmpty;
+        final String notAvailableMsg = "Sorry, nothing to display yet!",notAvailable;
+        final String cannotBeEmptyMsg = "Please try again with your correct details!",cannotBeEmpty;
 
         Gson gson = new Gson();
 
@@ -42,7 +42,7 @@ public class App {
         get("/",(req, res)->{
             Map<String, Object> model = new HashMap<>();
             List<News> news = newsDao.getAll();
-            int deptId = 2;
+            int deptId = 1;
 
             Department department = departmentDao.findById(deptId);
             model.put("news", news);
@@ -50,10 +50,12 @@ public class App {
             model.put("department", department);
             return new ModelAndView(model, "index.hbs");
         }, new HandlebarsTemplateEngine());
-        get("/dash",(req, res)->{
+
+        get("/main",(req, res)->{
             Map<String, Object> model = new HashMap<>();
             return new ModelAndView(model, "main.hbs");
         }, new HandlebarsTemplateEngine());
+
         post("/new/news", (req, res)->{
             Map<String, Object> model = new HashMap<>();
             String news = req.queryParams("news");
@@ -62,6 +64,7 @@ public class App {
             newsDao.add(newNews);
             return new ModelAndView(model, "main.hbs");
         }, new HandlebarsTemplateEngine());
+
         post("/new/user", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
             String userName = req.queryParams("userName");
@@ -75,6 +78,7 @@ public class App {
             userDao.add(newUser);
             return new ModelAndView(model, "main.hbs");
         }, new HandlebarsTemplateEngine());
+
         post("/new/department",(req, res) -> {
             Map<String, Object> model = new HashMap<>();
             String name = req.queryParams("name") ;
@@ -94,6 +98,7 @@ public class App {
             res.type("application/json");
             return gson.toJson(userDao.getAll());
         });
+
         get("/news", "application/json",(req, res) ->{
            if(newsDao.getAll().size() < 1){
                throw new ApiException(404, String.format(notAvailableMsg,"news"));
@@ -101,6 +106,7 @@ public class App {
            res.type("application/json");
            return gson.toJson(newsDao.getAll());
         });
+
         get("/departments", "application/json",(req, res) ->{
            if(departmentDao.getAll().size() < 0){
                 throw new ApiException(404, String.format(notAvailableMsg,"departments"));
@@ -120,6 +126,7 @@ public class App {
             res.status(201);
             return gson.toJson(user);
         });
+
         post("/news/new", "application/json", (req, res)->{
             News news = gson.fromJson(req.body(), News.class);
             if(news == null || news.getNews() == null){
@@ -130,6 +137,7 @@ public class App {
             res.status(201);
             return gson.toJson(news);
         });
+
         post("/department/new", "application/json", (req, res) -> {
            Department department = gson.fromJson(req.body(), Department.class);
            if (department == null){
